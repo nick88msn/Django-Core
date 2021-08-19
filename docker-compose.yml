@@ -4,7 +4,34 @@ services:
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
     ports:
       - "8080:8000"
+    depends_on:
+      - db
+    networks:
+      - default
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks: 
+      - default
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+          
+networks:
+  default:
+      external: true
+      name: app-net
